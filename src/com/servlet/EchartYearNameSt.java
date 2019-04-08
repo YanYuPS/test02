@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.dao.caseDao;
 
 /**
- * Servlet implementation class EchartYearSt
+ * Servlet implementation class EchartYearNameSt
  */
-@WebServlet("/EchartYearSt")
+@WebServlet("/EchartYearNameSt")
 public class EchartYearNameSt extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
