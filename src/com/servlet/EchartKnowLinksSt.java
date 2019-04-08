@@ -7,7 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.test.EchartExchange;
+import com.service.EchartExchange;
+import com.service.TxtSer;
 
 /**
  * Servlet implementation class EchartKnowLinksSt
@@ -36,10 +37,10 @@ public class EchartKnowLinksSt extends HttpServlet {
         response.setHeader("Access-Control-Allow-Credentials", "true");  
         response.setContentType("text/html;charset=utf-8");
         
-		EchartExchange echartExchange=new EchartExchange();
-		echartExchange.init();
-		String links = echartExchange.linksJoin();
-		links=links.replace("~", " ");
+        TxtSer txtSer=new TxtSer();
+		String path="E:\\workspace\\eclipse\\结果数据文件\\links.txt";
+		String links = txtSer.txtRe(path);
+		
 		System.out.println(links);
 		response.getWriter().append(links);
 	}

@@ -1,4 +1,4 @@
-package com.test;
+package com.service;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -9,12 +9,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EchartExchange {
-	// 实体和属性
+	// 实体和属性1
 	String[][] entityBig;
-	// 实体和属性
+	// 实体和属性2
 	String[][] entitySmall;
 	//数组长度
 	int l=0;
@@ -59,80 +63,130 @@ public class EchartExchange {
 	String colorAtt = "#8e44ad";
 	String colorEnt = "#000";
 	
-	//中英文对照
+	//中英文对照（球上的字和表的字段）
 	HashMap<String, String> map=new HashMap<String, String>();
-
+	//表格数据
+	HashMap<String, String> map2=new HashMap<String, String>();
+	
 	public static void main(String args[]) {
 		EchartExchange echartExchange = new EchartExchange();
+		TxtSer txtSer=new TxtSer();
+		String path1="E:\\workspace\\eclipse\\中间结果数据文件\\";
+		String path2="E:\\workspace\\eclipse\\结果数据文件\\";
 
-//		echartExchange.init();
-//		String data = echartExchange.dataJoin();
-//		data=data.replace("~", " ");
-//		System.out.println("------");
-//		System.out.println(data);
-//		String links = echartExchange.linksJoin();
-//		links=links.replace("~", " ");
-//		System.out.println("------");
-//		System.out.println(links);
+		//初始化：实体、属性、关系、类别
+		echartExchange.init();
 		
-		String datas="\"ID\":\"ffe3526f-adff-4c24-bdd7-c950f4ec98c5\",\"CASE_CODE\":\"1497402143035\",\"NAME\":\"关于北京市京冠动物医院有限公司 将人用药品用于动物案\",\"ENFORCEMENT_DATE\":\"2017-5-16 00:00:00\",\"PARTY_TYPE\":2,\"IS_WARN\":0,\"IS_FINE\":1,\"FINE_SUM\":10000,\"IS_RECONSIDERATION\":null,\"IS_LAWSUIT\":null,\"IS_END_CASE\":1,\"CLOSED_DATE\":\"2017-8-31 08:00:00\"";
-		//case-1
-		datas="\"ID\":\"ffe3526f-adff-4c24-bdd7-c950f4ec98c5\",\"CASE_CODE\":\"1497402143035\",\"NAME\":\"关于北京市京冠动物医院有限公司 将人用药品用于动物案\",\"ENFORCEMENT_DATE\":\"2017-5-16 00:00:00\",\"PARTY_TYPE\":2,\"IS_WARN\":0,\"IS_FINE\":1,\"FINE_SUM\":10000,\"IS_RECONSIDERATION\":null,\"IS_LAWSUIT\":null,\"IS_END_CASE\":1,\"CLOSED_DATE\":\"2017-8-31 08:00:00\"";
-		
-//		String data1 = echartExchange.oneData(datas);
-//		data1=data1.replace("~", " ");
-//		System.out.println("------");
-//		System.out.println(data1);
-		String link1 = echartExchange.oneLinks(datas);
-		link1=link1.replace("~", " ");
+		//拼接data
+		String data = echartExchange.dataJoin();
 		System.out.println("------");
-		System.out.println(link1);
+		System.out.println(data);
+		txtSer.txtWri(data, path1+"data带~.txt");
+		data=data.replace("~", " ");
+		txtSer.txtWri(data, path2+"data.txt");
+		
+		//拼接links
+		String links = echartExchange.linksJoin();
+		System.out.println("------");
+		System.out.println(links);
+		txtSer.txtWri(links, path1+"links带~.txt");
+		links=links.replace("~", " ");
+		txtSer.txtWri(links, path2+"links.txt");
+
+
 	}
 
-	public void initData() {
-		//读txt文件，获取string[][]
-		String pathBig = "C:\\Users\\zhaoyu\\Desktop\\workVue\\Know\\entityBig.txt";
-		entityBig=txtEntity(pathBig);
-		lb=l;
-		
-		String pathSmall = "C:\\Users\\zhaoyu\\Desktop\\workVue\\Know\\entitySmall.txt";
-		entitySmall=txtEntity(pathSmall);
-		ls=l;
-		
-		//类别
-		String pathCategory = "C:\\Users\\zhaoyu\\Desktop\\workVue\\Know\\category.txt";
-		txtCategory(pathCategory);
-		
-		//关系
-		String pathRelation = "C:\\Users\\zhaoyu\\Desktop\\workVue\\Know\\relation.txt";
-		txtRelation(pathRelation);
-	}
-	public void isRepeat() {
-		//判断重复，重复的添加空格
-		isRepeat(entityBig,1);
-		isRepeat(entitySmall,2);
-	}
 	public void init() {
 		initData();
 		isRepeat();
 	}
+	public void initData() {
+		String path="E:\\workspace\\eclipse\\原始数据文件\\";
+		
+		String pathBig = path+"实体和属性1.txt";
+		entityBig=txtEntity(pathBig);
+		lb=l;
+		
+		String pathSmall = path+"实体和属性2.txt";
+		entitySmall=txtEntity(pathSmall);
+		ls=l;
+		
+		//类别
+		String pathCategory = path+"类别.txt";
+		txtCategory(pathCategory);
+		
+		//关系
+		String pathRelation = path+"关系.txt";
+		txtRelation(pathRelation);
+	}
+	public void isRepeat() {
+		//判断重复，重复的添加~
+		isRepeat(entityBig,1);
+		isRepeat(entitySmall,2);
+	}
+
+	
+	/**
+	 * 球上的名字和对应的表格字段名字
+	 */
 	public void initMap() {
 		//关系
-		String path = "C:\\Users\\zhaoyu\\Desktop\\workVue\\Know\\ChineseEnglish.txt";
+		String path="E:\\workspace\\eclipse\\原始数据文件\\map1.txt";
 		txtMap(path);
 	}
+	/**
+	 * 每个ID和对应的一行数据
+	 */
+	public void iniMap2(){
+		//读取表格数据(读取10条)
+		String path="E:\\workspace\\eclipse\\结果数据文件\\案件-机关主体人员.txt";
+		try (BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));) {
+			String line;
+			int n=0;
+			while ((line = br.readLine()) != null) {// 一次读入一行数据
+				String pattern = "\"ID\":\"(.*?)\"";
+			    Pattern r = Pattern.compile(pattern);
+			    Matcher m = r.matcher(line);
+			    if (m.find( )) {
+			       map2.put(m.group(1), line);
+			    } else {
+			       System.out.println("NO MATCH");
+			    }
+			    
+				n++;
+				if(n==10) {
+					break;
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	public String oneData(String datas) {
-		initData();
-		isRepeat();
-		String data = dataJoin();
+		//原始data(带~)
+		TxtSer txtSer=new TxtSer();
+		String path="E:\\workspace\\eclipse\\中间结果数据文件\\data带~.txt";
+		String data = txtSer.txtRe(path);
 		
 		initMap();
-		//有的data替换掉
-		datas=datas.replace("\"", "");
-		String[] arr=datas.split(",");
+		iniMap2();
+		//根据ID找到对应的一行数据
+		if(map2.containsKey(datas)) {
+			datas=map2.get(datas);
+		}
+		
+		//map中包含中英文对照的，替换掉
+		//{"OFFICE_NAME":"王雪涛,邵琳萍","DEPARTMENT_NAME":"北京市国土资源局通州分局"}
+		datas=datas.replace("{", "");
+		datas=datas.replace("}", "");
+		//"OFFICE_NAME":"王雪涛,邵琳萍","DEPARTMENT_NAME":"北京市国土资源局通州分局"
+		String[] arr=datas.split(",\"");
+		//"OFFICE_NAME":"王雪涛,邵琳萍"--------DEPARTMENT_NAME":"北京市国土资源局通州分局"
 		for(int i=0;i<arr.length;i++) {
+			arr[i]=arr[i].replace("\"", "");
+			//OFFICE_NAME:王雪涛,邵琳萍--------DEPARTMENT_NAME:北京市国土资源局通州分局
 			String[] arr1=arr[i].split(":");
-			if(map.containsKey(arr1[0])) {
+			if(map.containsValue(arr1[0])) {
 				//替换data
 				data=replace(arr1,data);
 			}
@@ -142,16 +196,28 @@ public class EchartExchange {
 		return data;
 	}
 	public String oneLinks(String datas) {
-		initData();
-		isRepeat();
-		String links = linksJoin();
+		//原始data(带~)
+		TxtSer txtSer=new TxtSer();
+		String path="E:\\workspace\\eclipse\\中间结果数据文件\\links带~.txt";
+		String links = txtSer.txtRe(path);
 		
 		initMap();
-		datas=datas.replace("\"", "");
-		String[] arr=datas.split(",");
+		iniMap2();
+		if(map2.containsKey(datas)) {
+			datas=map2.get(datas);
+		}
+		
+		//{"OFFICE_NAME":"王雪涛,邵琳萍","DEPARTMENT_NAME":"北京市国土资源局通州分局"}
+		datas=datas.replace("{", "");
+		datas=datas.replace("}", "");
+		//"OFFICE_NAME":"王雪涛,邵琳萍","DEPARTMENT_NAME":"北京市国土资源局通州分局"
+		String[] arr=datas.split(",\"");
+		//"OFFICE_NAME":"王雪涛,邵琳萍--------DEPARTMENT_NAME":"北京市国土资源局通州分局"
 		for(int i=0;i<arr.length;i++) {
+			arr[i]=arr[i].replace("\"", "");
+			//OFFICE_NAME:王雪涛,邵琳萍--------DEPARTMENT_NAME:北京市国土资源局通州分局
 			String[] arr1=arr[i].split(":");
-			if(map.containsKey(arr1[0])) {
+			if(map.containsValue(arr1[0])) {
 				//替换
 				links=replace(arr1,links);
 			}
@@ -162,11 +228,26 @@ public class EchartExchange {
 	}
 	private String replace(String[] arr,String data) {
 		// TODO Auto-generated method stub
-		//arr[0]--key,arr[1]--值,
-		String value=map.get(arr[0]);//中文名
-		String dataNew=value+":"+arr[1];
+		//arr[0]--英文名,arr[1]--值,
 		
-		data=data.replace("\""+value+"\"", "\""+dataNew+"\"");
+		Set<String> keySet = map.keySet();
+		Iterator<String> it1 = keySet.iterator();
+		while(it1.hasNext()){
+			String key = it1.next();//中文名
+			String value = map.get(key);//英文名
+			
+			if(value.equals(arr[0])) {
+				String zh=key;//中文名
+				String arr1="";
+				if(arr.length!=1) {
+					arr1=arr[1];
+				}
+				String dataNew=zh+":"+arr1;
+				
+				data=data.replace("\""+zh+"\"", "\""+dataNew+"\"");
+			}
+		}
+		
 		return data;
 	}
 
@@ -179,12 +260,12 @@ public class EchartExchange {
 		try (BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(pathname),"UTF-8"));) {
 			String line;
 			while ((line = br.readLine()) != null) {// 一次读入一行数据
-				System.out.println(line.substring(0, 2));
+//				System.out.println(line.substring(0, 2));
 				if(line.substring(0, 2).equals("--")) {
 					continue;
 				}
 				String[] arr = line.split(",");
-				map.put(arr[0], arr[1]);
+				map.put(arr[1], arr[0]);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -328,8 +409,6 @@ public class EchartExchange {
 		// data属性拼接
 		strb = dataAttribute(entityBig, strb, 1);
 		strb = dataAttribute(entitySmall, strb, 2);
-
-		System.out.println();
 		
 		data = strb.toString();
 		data=data.substring(0, data.length()-1);

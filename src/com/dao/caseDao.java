@@ -1,5 +1,12 @@
 package com.dao;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -7,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.config.OracleUtil;
+import com.service.TxtSer;
 import com.sun.corba.se.impl.oa.poa.ActiveObjectMap.Key;
  
 public class caseDao {
@@ -14,46 +22,176 @@ public class caseDao {
 	HashMap<String, Integer> mapNumYM=new HashMap<String, Integer>();
 	HashMap<String, Integer> mapNumY=new HashMap<String, Integer>();
 	public static void main(String[] args) {
-		String name="case";
         caseDao caseDao=new caseDao();
-        caseDao.getNumber(name);
-		for(int i=2007;i<2019;i++) {
-			String year=i+"";
-			String num=caseDao.getMonth(year);
-//			num=num.replace("null", "0");
-			System.out.println(i);
-			System.out.println(num);
-			System.out.println(caseDao.getYearNum(year));
-		}
+        TxtSer txtSer=new TxtSer();
+        
+//        //获取全部月份案件数
+//        String name="case";
+//        caseDao.getNumber(name);
+//        
+//        String path="E:\\workspace\\eclipse\\结果数据文件\\";
+//        String yMonthNum="";
+//        String yearNum="[";
+//		for(int i=2007;i<2019;i++) {
+//			String year=i+"";
+//			String num=caseDao.getMonth(year);
+//			System.out.println(i);//年：2008
+////			System.out.println(num);//每个12个月的案件数：[3,2,3,1,1,3,0,1,3,3,1,0]
+////			System.out.println(caseDao.getYearNum(year));//每年案件总数：21
+//			yMonthNum=yMonthNum+i+"-"+num+"###";
+//			yearNum=yearNum+caseDao.getYearNum(year)+",";
+//		}
+//		yMonthNum=yMonthNum.substring(0, yMonthNum.length()-3);
+//		yearNum=yearNum.substring(0, yearNum.length()-1);
+//		yearNum=yearNum+"]";
+//		txtSer.txtWriMore(yMonthNum, path+"每年每月案件数.txt");//多行
+//		txtSer.txtWri(yearNum, path+"2007-2019每年案件总数.txt");//一行
+        
+        
+        //需要X个执法人员的案件个数
+//        caseDao.txtWri();
+        //执法机关处理的案件个数的执法机关数
+//        caseDao.txtWriCD();
+        
+        
+        System.out.println(caseDao.sgetYearName("casedep"));
+        System.out.println(caseDao.sgetYear("casedep"));
 	}
 	
 	public String sgetMonth(String year,String name) {
 		String r="";
 		HashMap<String, String> map=new HashMap<String, String>();
+		TxtSer txtSer=new TxtSer();
+
 		if(name.equalsIgnoreCase("case")) {
-			map.put("2007","[8,0,0,0,0,0,6,2,0,0,1,1]");
-			map.put("2008","[3,2,3,1,1,3,0,1,3,3,1,0]");
-			map.put("2009","[1,9,0,1,2,1,4,4,1,3,1,4]");
-			map.put("2010","[11,3,6,5,6,11,9,11,4,6,4,13]");
-			map.put("2011","[6,5,4,10,17,6,4,7,2,46,34,33]");
-			map.put("2012","[11,54,28,52,35,26,62,56,67,60,98,66]");
-			map.put("2013","[967,413,859,912,934,818,922,805,773,761,925,849]");
-			map.put("2014","[3854,2366,4676,5198,5109,5229,5987,5699,5752,7668,7333,7479]");
-			map.put("2015","[11524,5843,14695,15157,15362,13098,16541,13844,13720,29475,12623,10367]");
-			map.put("2016","[29223,7927,22298,30683,28850,29430,51948,42443,32769,32676,32734,56036]");
-			map.put("2017","[17748,23980,35840,28471,30416,41039,20898,27534,38625,17691,26213,28767]");
-			map.put("2018","[29896,12669,39085,23782,32385,47592,30282,33285,36030,40393,12678,0]");		
+			String path="E:\\workspace\\eclipse\\结果数据文件\\每年每月案件数.txt";
+			String num=txtSer.txtReMore(path);
+			String[] ym=num.split("###");//获取每行数据
+			for(int i=0;i<ym.length;i++) {
+				String[] arr=ym[i].split("-");
+				map.put(arr[0],arr[1]);//<年，每月案件数量>
+			}
 			r=map.get(year);
 		}
 		return r;
 	}
 	public String sgetYear(String name) {
 		String r="";
-		r="[18,21,31,89,174,615,9938,66350,172249,397017,337222,338077]";
+		TxtSer txtSer=new TxtSer();
+		if(name.equalsIgnoreCase("case")) {
+			String path="E:\\workspace\\eclipse\\结果数据文件\\2007-2019每年案件总数.txt";
+			r=txtSer.txtRe(path);
+		}else if(name.equalsIgnoreCase("peocase")) {
+			String path="E:\\workspace\\eclipse\\结果数据文件\\需要X个执法人员的案件个数.txt";
+			r=txtSer.txtRe(path);
+		}else if(name.equalsIgnoreCase("casedep")) {
+			String path="E:\\workspace\\eclipse\\结果数据文件\\执法机关处理的案件个数的执法机关数.txt";
+			r=txtSer.txtRe(path);
+		}
+		
 		return r;
 	}
-	public int getYearNum(String year) {
+	public String sgetYearName(String name) {
+		String r="";
+		TxtSer txtSer=new TxtSer();
+		if(name.equalsIgnoreCase("case")) {
+			String path="E:\\workspace\\eclipse\\结果数据文件\\2007-2019每年案件总数.txt";
+			r=txtSer.txtReMore(path);
+			r=r.substring(0,r.indexOf("###"));
+		}else if(name.equalsIgnoreCase("peocase")) {
+			String path="E:\\workspace\\eclipse\\结果数据文件\\需要X个执法人员的案件个数.txt";
+			r=txtSer.txtReMore(path);
+			r=r.substring(0,r.indexOf("###"));
+		}else if(name.equalsIgnoreCase("casedep")) {
+			String path="E:\\workspace\\eclipse\\结果数据文件\\执法机关处理的案件个数的执法机关数.txt";
+			r=txtSer.txtReMore(path);
+			r=r.substring(0,r.indexOf("###"));
+		}
 		
+		return r;
+	}	
+	/**
+	 * 人员-案件
+	 */
+	public void txtWri() {
+		//需要X个执法人员的案件个数
+        String pathFrom="E:\\workspace\\eclipse\\原始数据文件\\需要X个执法人员的案件个数.csv";
+        String peoNum="[";//需要的执法人员数
+        String caseNum="[";//案件个数
+
+		try (BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(pathFrom),"UTF-8"));) {
+	        String line;
+			while ((line = br.readLine()) != null) {// 一次读入一行数据
+				line=line.replace("\"", "");
+				String[] arr=line.split(",");
+				peoNum=peoNum+arr[0]+",";
+				caseNum=caseNum+arr[1]+",";
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		peoNum=peoNum.substring(0,peoNum.length()-1);
+		caseNum=caseNum.substring(0,caseNum.length()-1);
+		peoNum=peoNum+"]";
+		caseNum=caseNum+"]";
+        
+		String pathTo="E:\\workspace\\eclipse\\结果数据文件\\需要X个执法人员的案件个数.txt";
+		 try { // 防止文件建立或读取失败，用catch捕捉错误并打印，也可以throw  
+			 /* 写入Txt文件 */  
+	        File writename = new File(pathTo); 
+	        writename.createNewFile(); // 创建新文件  
+	        BufferedWriter out = new BufferedWriter(new FileWriter(writename));  
+	        out.write(peoNum+"\r\n"); // \r\n即为换行 
+	        out.write(caseNum);
+	        out.flush(); // 把缓存区内容压入文件  
+	        out.close(); // 最后记得关闭文件  
+	
+	    } catch (Exception e) {  
+	        e.printStackTrace();  
+	    }  
+	}
+	/**
+	 * 案件-机关
+	 */
+	public void txtWriCD() {
+		//执法机关处理的案件个数的执法机关数
+        String pathFrom="E:\\workspace\\eclipse\\原始数据文件\\执法机关处理的案件个数的执法机关数.csv";
+        String caseNum="[";//
+        String depNum="[";//
+
+		try (BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(pathFrom),"UTF-8"));) {
+	        String line;
+			while ((line = br.readLine()) != null) {// 一次读入一行数据
+				line=line.replace("\"", "");
+				String[] arr=line.split(",");
+				caseNum=caseNum+arr[0]+",";
+				depNum=depNum+arr[1]+",";
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		caseNum=caseNum.substring(0,caseNum.length()-1);
+		depNum=depNum.substring(0,depNum.length()-1);
+		caseNum=caseNum+"]";
+		depNum=depNum+"]";
+        
+		String pathTo="E:\\workspace\\eclipse\\结果数据文件\\执法机关处理的案件个数的执法机关数.txt";
+		 try { // 防止文件建立或读取失败，用catch捕捉错误并打印，也可以throw  
+			 /* 写入Txt文件 */  
+	        File writename = new File(pathTo); 
+	        writename.createNewFile(); // 创建新文件  
+	        BufferedWriter out = new BufferedWriter(new FileWriter(writename));  
+	        out.write(caseNum+"\r\n"); // \r\n即为换行 
+	        out.write(depNum);
+	        out.flush(); // 把缓存区内容压入文件  
+	        out.close(); // 最后记得关闭文件  
+	
+	    } catch (Exception e) {  
+	        e.printStackTrace();  
+	    }  
+	}
+	
+	public int getYearNum(String year) {
 		Integer r=0;
 		for(int i=1;i<=12;i++) {
 			String key="";
@@ -191,4 +329,7 @@ public class caseDao {
 	}
 
 
+	
+	
+	
 }

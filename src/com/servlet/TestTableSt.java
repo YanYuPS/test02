@@ -37,6 +37,8 @@ public class TestTableSt extends HttpServlet {
         String name=request.getParameter("name");
         System.out.println(name);
         
+        String num="";
+		response.getWriter().append(num);
 	}
 
 	/**

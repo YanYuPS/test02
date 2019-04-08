@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.test.EchartExchange;
+import com.service.EchartExchange;
 
 /**
  * Servlet implementation class EchartKonwOneSt
@@ -41,8 +41,6 @@ public class EchartKonwOneSt extends HttpServlet {
 		EchartExchange echartExchange=new EchartExchange();
 		String data = echartExchange.oneData(datas);
 		data=data.replace("~", " ");
-		//String data = echartExchange.dataJoin();
-//		String links = echartExchange.linksJoin();
 		System.out.println(data);
 		response.getWriter().append(data);
 	}

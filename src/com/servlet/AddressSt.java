@@ -7,20 +7,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.service.EchartExchange;
-import com.service.TxtSer;
+import com.dao.caseDao;
+import com.service.AddressSer;
 
 /**
- * Servlet implementation class EchartKnowDataSt
+ * Servlet implementation class AddressSt
  */
-@WebServlet("/EchartKnowDataSt")
-public class EchartKnowDataSt extends HttpServlet {
+@WebServlet("/AddressSt")
+public class AddressSt extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public EchartKnowDataSt() {
+    public AddressSt() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -37,12 +37,12 @@ public class EchartKnowDataSt extends HttpServlet {
         response.setHeader("Access-Control-Allow-Credentials", "true");  
         response.setContentType("text/html;charset=utf-8");
         
-		TxtSer txtSer=new TxtSer();
-		String path="E:\\workspace\\eclipse\\结果数据文件\\data.txt";
-		String data = txtSer.txtRe(path);
-
-		System.out.println(data);
-		response.getWriter().append(data);
+        
+        String name=request.getParameter("name");
+        AddressSer addressSer=new AddressSer();
+		String str=addressSer.txtMap();
+		response.getWriter().append(str);
+        
 	}
 
 	/**
