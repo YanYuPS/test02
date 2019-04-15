@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.bean.StaticFile;
 import com.service.EchartExchange;
 import com.service.TxtSer;
 
@@ -38,10 +39,10 @@ public class EchartKnowLinksSt extends HttpServlet {
         response.setContentType("text/html;charset=utf-8");
         
         TxtSer txtSer=new TxtSer();
-		String path="E:\\workspace\\eclipse\\结果数据文件\\links.txt";
+        String pathOut=StaticFile.PATH;
+		String path=pathOut+"\\结果数据文件\\links.txt";
 		String links = txtSer.txtRe(path);
-		
-		System.out.println(links);
+//		System.out.println(links);
 		response.getWriter().append(links);
 	}
 

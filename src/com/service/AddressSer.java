@@ -10,12 +10,15 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.bean.StaticFile;
+
 
 public class AddressSer {
 
-	
+	static String pathOut=StaticFile.PATH;
 	
 	public static void main(String args[]) {
+		
 		//ArrayList<String> qu=new ArrayList<String>(Arrays.asList(""));
 //		String line = "北京市朝阳区东三环北路乙二号海南航空大厦A座5层";
 //	    String pattern = "朝阳|海淀|东城";
@@ -32,6 +35,7 @@ public class AddressSer {
 		
 		AddressSer addressSer=new AddressSer();
 		System.out.println(addressSer.txtMap());
+		
 	}
 	
 	
@@ -47,7 +51,7 @@ select c.address from TBL_CASE_COMMON_BASIC c where c.address is not null
 select c.address from TBL_CASE_SIMPLE_BASIC c where c.address is not null 
  and c.address!=' ' and c.address!='/' ORDER BY c.address
 		 */
-		String pathname="E:\\workspace\\eclipse\\原始数据文件\\案件地址.json";
+
 		HashMap<String, Integer> qu=new HashMap<String, Integer>();
 		qu.put("昌平", 0);
 		qu.put("朝阳", 0);
@@ -65,8 +69,10 @@ select c.address from TBL_CASE_SIMPLE_BASIC c where c.address is not null
 		qu.put("延庆", 0);
 		qu.put("门头沟", 0);
 		qu.put("石景山", 0);
-		 
-		try (BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(pathname),"UTF-8"));) {
+		
+		String pathnameCom=pathOut+"\\原始数据文件\\一般案件地址.csv";
+		try (BufferedReader br=new BufferedReader(new InputStreamReader(
+				new FileInputStream(pathnameCom),"UTF-8"));) {
 			String line;
 			while ((line = br.readLine()) != null) {// 一次读入一行数据
 				String pattern = "昌平|朝阳|大兴|东城|房山|丰台|海淀|怀柔|密云|平谷|顺义|通州|西城|延庆|门头沟|石景山";
@@ -83,9 +89,28 @@ select c.address from TBL_CASE_SIMPLE_BASIC c where c.address is not null
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-			
+		String pathnameSim=pathOut+"\\原始数据文件\\一般案件地址.csv";
+		try (BufferedReader br=new BufferedReader(new InputStreamReader(
+				new FileInputStream(pathnameSim),"UTF-8"));) {
+			String line;
+			while ((line = br.readLine()) != null) {// 一次读入一行数据
+				String pattern = "昌平|朝阳|大兴|东城|房山|丰台|海淀|怀柔|密云|平谷|顺义|通州|西城|延庆|门头沟|石景山";
+				// 创建 Pattern 对象
+			    Pattern r = Pattern.compile(pattern);
+				Matcher m = r.matcher(line);
+			    if (m.find( )) {
+			       String quStr=m.group(0);
+			       if(qu.containsKey(quStr)) {
+			    	   qu.put(quStr, qu.get(quStr)+1);
+			       }
+			    }
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}			
 		//[{name: '北京',value:0},..]
 		String r="[";
+		StringBuffer sb=new StringBuffer(r);
 		
 		int sum=0;
 		Set<String> keySet = qu.keySet();
@@ -96,9 +121,12 @@ select c.address from TBL_CASE_SIMPLE_BASIC c where c.address is not null
 			sum+=num;
 			//System.out.println(ID+" "+num);
 			//{name: '北京',value:0},
-			r=r+"{name: '"+ID+"区',value:"+num+"},";
+			sb.append("{name: '").append(ID).append("区',value:")
+				.append(num).append("},");
+//			r=r+"{name: '"+ID+"区',value:"+num+"},";
 		}
 		System.out.println(sum);
+		r=sb.toString();
 		r=r.substring(0, r.length()-1);
 		r=r+"]";
 		

@@ -15,10 +15,12 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.bean.StaticFile;
 import com.config.OracleUtil;
 
 public class TablePeoSer {
-
+	static String pathOut=StaticFile.PATH;
+	
 	ArrayList<String> orgList=new ArrayList<String>();
 	ArrayList<String> subList=new ArrayList<String>();
 	ArrayList<String> caseList=new ArrayList<String>();
@@ -55,10 +57,10 @@ public class TablePeoSer {
  select * from TBL_BASIC_PERSON p
  where ROWNUM<100 ORDER BY p.id;
 		 */
-		String path="E:\\workspace\\eclipse\\原始数据文件\\人员-机关主体案件.txt";
+		String path=pathOut+"\\原始数据文件\\人员-机关主体案件.txt";
 		try (BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));) {
     
-			File writename = new File("E:\\workspace\\eclipse\\中间结果数据文件\\人员-机关主体案件.txt"); 
+			File writename = new File(pathOut+"\\中间结果数据文件\\人员-机关主体案件.txt"); 
 	        writename.createNewFile(); // 创建新文件  
 	        BufferedWriter out = new BufferedWriter(new FileWriter(writename));
 	        
@@ -83,7 +85,7 @@ public class TablePeoSer {
 	 * 获取99条数据的执法机关、执法主体、案件list
 	 */
 	public void getList() {
-		String path="E:\\workspace\\eclipse\\中间结果数据文件\\人员-机关主体案件.txt";
+		String path=pathOut+"\\中间结果数据文件\\人员-机关主体案件.txt";
 		try (BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));) {
 			String line;
 			while ((line = br.readLine()) != null) {// 一次读入一行数据
@@ -108,10 +110,10 @@ public class TablePeoSer {
 	 * 读取原始数据文件，将执法机关、执法主体、案件添加进去
 	 */
 	public void txtRe1() {
-		String path="E:\\workspace\\eclipse\\原始数据文件\\人员-机关主体案件.txt";
+		String path=pathOut+"\\原始数据文件\\人员-机关主体案件.txt";
 		try (BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));) {
     
-			File writename = new File("E:\\workspace\\eclipse\\结果数据文件\\人员-机关主体案件.txt"); 
+			File writename = new File(pathOut+"\\结果数据文件\\人员-机关主体案件.txt"); 
 	        writename.createNewFile(); // 创建新文件  
 	        BufferedWriter out = new BufferedWriter(new FileWriter(writename));
 	        
@@ -144,6 +146,29 @@ public class TablePeoSer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	/**
+	 * 读取结果数据文件
+	 */
+	public String txtRe2() {
+		String r="[";
+		String path=pathOut+"\\结果数据文件\\人员-机关主体案件.txt";
+		try (BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));) {	        
+			String line;
+			int n=0;
+			while ((line = br.readLine()) != null) {// 一次读入一行数据
+				r=r+line;
+				n++;
+				if(n==10) {
+					break;
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		r=r.substring(0,r.length()-1);
+		r=r+"]";
+		return r;
 	}
 	
 	

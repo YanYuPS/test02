@@ -1,13 +1,14 @@
 package com.servlet;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.service.EchartExchange;
+import com.bean.StaticFile;
 import com.service.TxtSer;
 
 /**
@@ -38,10 +39,11 @@ public class EchartKnowDataSt extends HttpServlet {
         response.setContentType("text/html;charset=utf-8");
         
 		TxtSer txtSer=new TxtSer();
-		String path="E:\\workspace\\eclipse\\结果数据文件\\data.txt";
+		String pathOut=StaticFile.PATH;
+		
+		String path=pathOut+"\\结果数据文件\\data.txt";
 		String data = txtSer.txtRe(path);
-
-		System.out.println(data);
+//		System.out.println(data);
 		response.getWriter().append(data);
 	}
 

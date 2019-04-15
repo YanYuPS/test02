@@ -37,10 +37,11 @@ public class AddressSt extends HttpServlet {
         response.setHeader("Access-Control-Allow-Credentials", "true");  
         response.setContentType("text/html;charset=utf-8");
         
+//        String name=request.getParameter("name");
         
-        String name=request.getParameter("name");
         AddressSer addressSer=new AddressSer();
 		String str=addressSer.txtMap();
+		
 		response.getWriter().append(str);
         
 	}

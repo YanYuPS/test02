@@ -37,8 +37,10 @@ public class EchartYearSt extends HttpServlet {
         response.setContentType("text/html;charset=utf-8");
         
         String name=request.getParameter("name");
+        
         caseDao caseDao=new caseDao();
 		String num=caseDao.sgetYear(name);
+		
 		response.getWriter().append(num);
 	}
 

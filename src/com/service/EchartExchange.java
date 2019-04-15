@@ -15,7 +15,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.bean.StaticFile;
+
 public class EchartExchange {
+	
+	static String pathOut=StaticFile.PATH;
+	
 	// 实体和属性1
 	String[][] entityBig;
 	// 实体和属性2
@@ -37,6 +42,7 @@ public class EchartExchange {
 	ArrayList<String> categoryLaw = new ArrayList<String>();// 法律法规
 	ArrayList<String> categoryCase = new ArrayList<String>();// 执法案件
 	ArrayList<String> categoryAtt = new ArrayList<String>();//属性
+	ArrayList<String> categoryNone = new ArrayList<String>();//无数据
 
 	// 背景颜色
 	String colorBack = "#fff";
@@ -52,6 +58,7 @@ public class EchartExchange {
 	int categoryNumCase = 2; // 执法案件
 	int categoryNumLaw = 3; // 法律法规
 	int categoryNumAtt = 4; // 属性
+	int categoryNumNone = 5; // 
 	// 固定
 	boolean draggableBig = true;
 	boolean draggableSmall = true;
@@ -71,8 +78,8 @@ public class EchartExchange {
 	public static void main(String args[]) {
 		EchartExchange echartExchange = new EchartExchange();
 		TxtSer txtSer=new TxtSer();
-		String path1="E:\\workspace\\eclipse\\中间结果数据文件\\";
-		String path2="E:\\workspace\\eclipse\\结果数据文件\\";
+		String path1=pathOut+"\\中间结果数据文件\\";
+		String path2=pathOut+"\\结果数据文件\\";
 
 		//初始化：实体、属性、关系、类别
 		echartExchange.init();
@@ -101,7 +108,7 @@ public class EchartExchange {
 		isRepeat();
 	}
 	public void initData() {
-		String path="E:\\workspace\\eclipse\\原始数据文件\\";
+		String path=pathOut+"\\原始数据文件\\";
 		
 		String pathBig = path+"实体和属性1.txt";
 		entityBig=txtEntity(pathBig);
@@ -131,7 +138,7 @@ public class EchartExchange {
 	 */
 	public void initMap() {
 		//关系
-		String path="E:\\workspace\\eclipse\\原始数据文件\\map1.txt";
+		String path=pathOut+"\\原始数据文件\\map1.txt";
 		txtMap(path);
 	}
 	/**
@@ -139,7 +146,7 @@ public class EchartExchange {
 	 */
 	public void iniMap2(){
 		//读取表格数据(读取10条)
-		String path="E:\\workspace\\eclipse\\结果数据文件\\案件-机关主体人员.txt";
+		String path=pathOut+"\\结果数据文件\\案件-机关主体人员.txt";
 		try (BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));) {
 			String line;
 			int n=0;
@@ -165,7 +172,7 @@ public class EchartExchange {
 	public String oneData(String datas) {
 		//原始data(带~)
 		TxtSer txtSer=new TxtSer();
-		String path="E:\\workspace\\eclipse\\中间结果数据文件\\data带~.txt";
+		String path=pathOut+"\\中间结果数据文件\\data带~.txt";
 		String data = txtSer.txtRe(path);
 		
 		initMap();
@@ -198,7 +205,7 @@ public class EchartExchange {
 	public String oneLinks(String datas) {
 		//原始data(带~)
 		TxtSer txtSer=new TxtSer();
-		String path="E:\\workspace\\eclipse\\中间结果数据文件\\links带~.txt";
+		String path=pathOut+"\\中间结果数据文件\\links带~.txt";
 		String links = txtSer.txtRe(path);
 		
 		initMap();
@@ -239,7 +246,7 @@ public class EchartExchange {
 			if(value.equals(arr[0])) {
 				String zh=key;//中文名
 				String arr1="";
-				if(arr.length!=1) {
+				if(arr.length!=1 && arr[1]!=null && !arr[1].equals("null")) {
 					arr1=arr[1];
 				}
 				String dataNew=zh+":"+arr1;
@@ -314,6 +321,8 @@ public class EchartExchange {
 					categoryLaw.addAll(Arrays.asList(arr1));
 				}else if(arr[0].equals("执法案件")) {
 					categoryCase.addAll(Arrays.asList(arr1));
+				}else if(arr[0].equals("无数据")) {
+					categoryNone.addAll(Arrays.asList(arr1));
 				}
 			}
 		} catch (IOException e) {
@@ -468,6 +477,8 @@ public class EchartExchange {
 				categoryNum = categoryNumCase;
 			} else if (categoryLaw.contains(entity[i][0])) {
 				categoryNum = categoryNumLaw;
+			} else if (categoryNone.contains(entity[i][0])) {
+				categoryNum = categoryNumNone;
 			}
 			// 圈的大小+字体颜色 √
 			if (entity[i][0].equals("学历")) {

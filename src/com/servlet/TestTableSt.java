@@ -7,6 +7,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.service.TableCaseSer;
+import com.service.TableDepSer;
+import com.service.TablePeoSer;
+
 /**
  * Servlet implementation class TestTableSt
  */
@@ -37,8 +41,18 @@ public class TestTableSt extends HttpServlet {
         String name=request.getParameter("name");
         System.out.println(name);
         
-        String num="";
-		response.getWriter().append(num);
+        String r="";
+        if("处罚案件".equals(name.subSequence(0, 4)) ) {
+        	TableCaseSer table=new TableCaseSer();
+        	r=table.txtRe2();
+        }else if("执法人员".equals(name.subSequence(0, 4))) {
+        	TablePeoSer table=new TablePeoSer();
+        	r=table.txtRe2();
+        }else if("执法机关".equals(name.subSequence(0, 4))) {
+        	TableDepSer table=new TableDepSer();
+        	r=table.txtRe2();
+        }
+		response.getWriter().append(r);
 	}
 
 	/**

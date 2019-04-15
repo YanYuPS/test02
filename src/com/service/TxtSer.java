@@ -7,8 +7,6 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class TxtSer {
 
@@ -45,20 +43,45 @@ public class TxtSer {
 	    }  
 	}
 	/**
+	 * 第n行
+	 * @param path
+	 * @param n
+	 * @return
+	 */
+	public String txtReN(String path,int n) {
+		String r="";
+		try (BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));) {
+	        String line;
+	        int i=0;
+			while ((line = br.readLine()) != null) {// 一次读入一行数据
+				i++;
+				if(i==n) {
+					r=line;
+				}
+			}    
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return r;
+	}
+	/**
 	 * ###号连接多行
 	 * @param path
 	 * @return
 	 */
 	public String txtReMore(String path) {
 		String r="";
+		StringBuffer rsb=new StringBuffer(r);
 		try (BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));) {
 	        String line;
 			while ((line = br.readLine()) != null) {// 一次读入一行数据
-				r=r+line+"###";
+//				r=r+line+"###";
+				rsb.append(line).append("###");
 			}    
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		r=rsb.toString();
 		r=r.substring(0, r.length()-3);
 		return r;
 	}
